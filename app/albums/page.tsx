@@ -35,7 +35,7 @@ export default async function AlbumsPage() {
                 {album.artist} · {album.year}
               </p>
             </div>
-            <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium">
+            <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-900">
               {album.rating}/10
             </span>
           </li>
