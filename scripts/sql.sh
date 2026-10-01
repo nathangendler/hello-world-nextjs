@@ -8,7 +8,7 @@ if [ -z "$TOKEN" ]; then
   echo "Not logged in. Run: supabase login" >&2
   exit 1
 fi
-BODY=$(node -e 'console.log(JSON.stringify({ query: process.argv[1] }))' "$1")
+BODY=$(node -e 'console.log(JSON.stringify({ query: process.argv[1] }))' -- "$1")
 curl -s -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d "$BODY"
 echo

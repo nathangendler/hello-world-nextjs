@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { supabase, type Album } from "@/lib/supabase";
+import { supabaseAnon, type Album } from "@/lib/supabase/anon";
 
 export const dynamic = "force-dynamic";
 
 export default async function AlbumsPage() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAnon
     .from("albums")
-    .select("id, title, artist, year, rating")
+    .select("*")
     .order("rating", { ascending: false });
 
   if (error) {
@@ -18,7 +18,7 @@ export default async function AlbumsPage() {
     );
   }
 
-  const albums = (data ?? []) as Album[];
+  const albums: Album[] = data ?? [];
 
   return (
     <main className="mx-auto max-w-2xl p-8">
