@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 
 const geistSans = Geist({
@@ -27,6 +28,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <SiteHeader />
         {children}
+        <footer className="mt-auto px-6 py-4 text-center text-xs text-gray-500">
+          <Link href="/privacy" className="underline">
+            Privacy Policy
+          </Link>
+        </footer>
       </body>
     </html>
   );
