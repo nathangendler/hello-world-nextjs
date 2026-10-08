@@ -7,12 +7,12 @@ if (!supabaseUrl) {
 
 const nextConfig: NextConfig = {
   images: {
-    // Profile photos are served from the project's public storage bucket.
+    // Profile photos and captioned moments are served from the project's public storage buckets.
     remotePatterns: [
       {
         protocol: "https",
         hostname: new URL(supabaseUrl).hostname,
-        pathname: "/storage/v1/object/public/avatars/**",
+        pathname: "/storage/v1/object/public/**",
       },
     ],
   },

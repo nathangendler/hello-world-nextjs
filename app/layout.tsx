@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hello World",
-  description: "Next.js + Supabase demo with Google sign-in",
+  title: "Caption the City",
+  description: "AI captions for your NYC moments, rated by everyone",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

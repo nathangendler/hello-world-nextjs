@@ -41,6 +41,71 @@ export type Database = {
         }
         Relationships: []
       }
+      captions: {
+        Row: {
+          created_at: string
+          generation_id: string
+          id: string
+          position: number
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          generation_id: string
+          id?: string
+          position: number
+          text: string
+        }
+        Update: {
+          created_at?: string
+          generation_id?: string
+          id?: string
+          position?: number
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "captions_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generations: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          model: string
+          prompt: string
+          user_id: string
+          user_note: string | null
+          vibe: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          model: string
+          prompt: string
+          user_id: string
+          user_note?: string | null
+          vibe: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          model?: string
+          prompt?: string
+          user_id?: string
+          user_note?: string | null
+          vibe?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -71,9 +136,96 @@ export type Database = {
         }
         Relationships: []
       }
+      ratings: {
+        Row: {
+          caption_id: string
+          created_at: string
+          id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          caption_id: string
+          created_at?: string
+          id?: string
+          score: number
+          user_id: string
+        }
+        Update: {
+          caption_id?: string
+          created_at?: string
+          id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ratings_caption_id_fkey"
+            columns: ["caption_id"]
+            isOneToOne: false
+            referencedRelation: "captions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ratings_caption_id_fkey"
+            columns: ["caption_id"]
+            isOneToOne: false
+            referencedRelation: "feed_captions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      caption_scores: {
+        Row: {
+          average_score: number | null
+          caption_id: string | null
+          rating_count: number | null
+          weighted_score: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ratings_caption_id_fkey"
+            columns: ["caption_id"]
+            isOneToOne: false
+            referencedRelation: "captions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ratings_caption_id_fkey"
+            columns: ["caption_id"]
+            isOneToOne: false
+            referencedRelation: "feed_captions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feed_captions: {
+        Row: {
+          average_score: number | null
+          created_at: string | null
+          generation_id: string | null
+          id: string | null
+          image_url: string | null
+          position: number | null
+          rating_count: number | null
+          text: string | null
+          user_id: string | null
+          user_note: string | null
+          vibe: string | null
+          weighted_score: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "captions_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never

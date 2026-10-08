@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "./database.types";
 import { supabaseAnonKey, supabaseUrl } from "./env";
 
-const PROTECTED_PREFIXES = ["/dashboard", "/profile", "/onboarding"];
+const PROTECTED_PREFIXES = ["/dashboard", "/profile", "/onboarding", "/generate"];
 
 function isProtected(pathname: string): boolean {
   return PROTECTED_PREFIXES.some(

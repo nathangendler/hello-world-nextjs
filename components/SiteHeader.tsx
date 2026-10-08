@@ -10,9 +10,10 @@ export async function SiteHeader() {
     <header className="border-b border-gray-200 dark:border-gray-800">
       <nav className="mx-auto flex max-w-3xl items-center gap-5 px-6 py-3 text-sm">
         <Link href="/" className="font-semibold">
-          Hello World
+          Caption the City
         </Link>
-        <Link href="/albums">Albums</Link>
+        <Link href="/feed">Feed</Link>
+        <Link href="/generate">Generate</Link>
         {profile && <Link href="/dashboard">Dashboard</Link>}
         <div className="ml-auto flex items-center gap-4">
           {profile ? (
