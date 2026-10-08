@@ -77,7 +77,16 @@ export function GenerateForm({
     }
 
     setStatus({ kind: "generating" });
-    const result = await createGeneration({ vibe, note, imagePath });
+    let result: Awaited<ReturnType<typeof createGeneration>>;
+    try {
+      result = await createGeneration({ vibe, note, imagePath });
+    } catch {
+      setStatus({
+        kind: "failed",
+        errors: ["Something went wrong on the server while generating. Please try again."],
+      });
+      return;
+    }
     if (!result.ok) {
       setStatus({ kind: "failed", errors: result.errors });
       return;

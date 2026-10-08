@@ -23,11 +23,15 @@ export function RatingControl({
   function rate(next: number) {
     setError(null);
     startTransition(async () => {
-      const result = await rateCaption(captionId, next);
-      if (result.ok) {
-        setScore(result.score);
-      } else {
-        setError(result.error);
+      try {
+        const result = await rateCaption(captionId, next);
+        if (result.ok) {
+          setScore(result.score);
+        } else {
+          setError(result.error);
+        }
+      } catch {
+        setError("Something went wrong while saving your rating. Please try again.");
       }
     });
   }

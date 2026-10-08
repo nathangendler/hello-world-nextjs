@@ -24,8 +24,19 @@ type GeminiResponse = {
   error?: { message?: string };
 };
 
+// Keys pasted into a dashboard often arrive wrapped in quotes or with stray
+// whitespace; anything outside printable ASCII would also crash fetch's header encoding.
+function readApiKey(): string | null {
+  const raw = process.env.GEMINI_API_KEY;
+  if (!raw) {
+    return null;
+  }
+  const key = raw.trim().replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "");
+  return /^[\x21-\x7e]{20,200}$/.test(key) ? key : null;
+}
+
 export function isGeminiConfigured(): boolean {
-  return Boolean(process.env.GEMINI_API_KEY);
+  return readApiKey() !== null;
 }
 
 // Asks Gemini for a JSON array of strings. Returns the raw text; parsing is the caller's job.
@@ -34,10 +45,12 @@ export async function generateJsonArray(input: {
   image: GeminiImage | null;
   itemCount: number;
 }): Promise<{ model: string; text: string }> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = readApiKey();
   if (!apiKey) {
     throw new GeminiError(
-      "Caption generation is not configured yet (missing GEMINI_API_KEY).",
+      process.env.GEMINI_API_KEY
+        ? "GEMINI_API_KEY is malformed. It must be just the key, with no quotes, spaces, or extra text."
+        : "Caption generation is not configured yet (missing GEMINI_API_KEY).",
       "not_configured",
     );
   }
@@ -57,6 +70,8 @@ export async function generateJsonArray(input: {
       contents: [{ role: "user", parts }],
       generationConfig: {
         temperature: 1.1,
+        // Captions don't benefit from the model's "thinking" pass; skipping it cuts latency.
+        thinkingConfig: { thinkingBudget: 0 },
         responseMimeType: "application/json",
         responseSchema: {
           type: "ARRAY",
