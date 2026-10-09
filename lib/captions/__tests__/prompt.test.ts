@@ -22,8 +22,17 @@ describe("parseCaptions", () => {
     expect(result).toEqual({ ok: true, captions: ["first", "second", "third"] });
   });
 
-  it("rejects non-JSON", () => {
+  it("accepts the {captions: [...]} object shape the prompt asks for", () => {
+    const result = parseCaptions('{"captions": ["one", "two", "three"]}');
+    expect(result).toEqual({ ok: true, captions: ["one", "two", "three"] });
+  });
+
+  it("rejects non-JSON and JSON without a captions array", () => {
     expect(parseCaptions("not json").ok).toBe(false);
+    expect(parseCaptions('{"text": "one"}')).toEqual({
+      ok: false,
+      reason: "Response did not contain a captions array.",
+    });
   });
 
   it("rejects fewer than three usable captions, counting duplicates once", () => {

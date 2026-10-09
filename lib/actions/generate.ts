@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseUrl } from "@/lib/supabase/env";
-import { GeminiError, generateJsonArray, type GeminiImage } from "@/lib/ai/gemini";
+import { AiError, type AiImage } from "@/lib/ai/errors";
+import { generateJson } from "@/lib/ai/provider";
 import {
   CAPTION_COUNT,
   DAILY_GENERATION_LIMIT,
@@ -22,7 +23,7 @@ function publicImageUrl(imagePath: string): string {
   return `${supabaseUrl}/storage/v1/object/public/${MOMENTS_BUCKET}/${imagePath}`;
 }
 
-async function loadImage(imagePath: string): Promise<GeminiImage> {
+async function loadImage(imagePath: string): Promise<AiImage> {
   const response = await fetch(publicImageUrl(imagePath));
   if (!response.ok) {
     throw new Error("The uploaded photo could not be read back.");
@@ -73,7 +74,7 @@ export async function createGeneration(raw: {
     };
   }
 
-  let image: GeminiImage | null = null;
+  let image: AiImage | null = null;
   if (imagePath) {
     try {
       image = await loadImage(imagePath);
@@ -85,9 +86,9 @@ export async function createGeneration(raw: {
   const prompt = buildPrompt({ vibe, note, hasImage: image !== null });
   let generated: { model: string; text: string };
   try {
-    generated = await generateJsonArray({ prompt, image, itemCount: CAPTION_COUNT });
+    generated = await generateJson({ prompt, image, itemCount: CAPTION_COUNT });
   } catch (error) {
-    if (error instanceof GeminiError) {
+    if (error instanceof AiError) {
       return { ok: false, errors: [error.message] };
     }
     throw error;

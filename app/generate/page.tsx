@@ -1,5 +1,5 @@
 import { requireCompleteProfile } from "@/lib/auth";
-import { isGeminiConfigured } from "@/lib/ai/gemini";
+import { isAiConfigured } from "@/lib/ai/provider";
 import { MAX_NOTE_LENGTH } from "@/lib/captions/config";
 import { DailyPromptCard } from "@/components/DailyPromptCard";
 import { GenerateForm } from "@/components/GenerateForm";
@@ -18,9 +18,9 @@ export default async function GeneratePage({
       <p className="mt-2 text-gray-500">
         Describe the moment, add a photo if you have one, and pick a vibe.
       </p>
-      {!isGeminiConfigured() && (
+      {!isAiConfigured() && (
         <p role="alert" className="mt-4 rounded-lg border border-amber-400 px-4 py-2 text-sm text-amber-700">
-          Caption generation is not configured on this deployment yet (GEMINI_API_KEY is missing).
+          Caption generation is not configured on this deployment yet (no valid GROQ_API_KEY or GEMINI_API_KEY).
         </p>
       )}
       <div className="mt-6">

@@ -46,7 +46,7 @@ uploads are limited to the uploader's own folder, 5 MB, and image types only.
 ## Setup
 
 Copy `.env.example` to `.env.local` and fill in the Supabase URL, anon key, and a Gemini API
-key. Database setup, in order: `supabase-schema.sql` (albums), `supabase-profiles.sql`
+key (or a Groq key, which has a free plan). Database setup, in order: `supabase-schema.sql` (albums), `supabase-profiles.sql`
 (profiles, new-user trigger, avatars), `supabase-captions.sql` (generations, captions,
 ratings, score views, moments bucket). `scripts/sql.sh "<sql>"` runs SQL against the project
 using the Supabase CLI login.

@@ -11,7 +11,7 @@ export function buildPrompt(input: {
     `Vibe: ${VIBE_DETAILS[input.vibe].instruction}`,
     `Write exactly ${CAPTION_COUNT} distinct captions. Each one is a single line under 110 characters, with no hashtags and no surrounding quotation marks.`,
     "Mention specific details from the photo and the note when they are given. Never invent names of people.",
-    `Respond with a JSON array of ${CAPTION_COUNT} strings and nothing else.`,
+    `Respond with JSON only, in this exact shape: {"captions": ["...", "...", "..."]} with ${CAPTION_COUNT} strings.`,
   ];
   if (input.hasImage) {
     lines.push("A photo of the moment is attached.");
@@ -34,11 +34,18 @@ export function parseCaptions(raw: string): ParsedCaptions {
   } catch {
     return { ok: false, reason: "Response was not valid JSON." };
   }
-  if (!Array.isArray(value)) {
-    return { ok: false, reason: "Response was not a JSON array." };
+  // Accept either a bare array or the {"captions": [...]} object the prompt asks for.
+  const list =
+    Array.isArray(value)
+      ? value
+      : value !== null && typeof value === "object" && "captions" in value
+        ? (value as { captions: unknown }).captions
+        : null;
+  if (!Array.isArray(list)) {
+    return { ok: false, reason: "Response did not contain a captions array." };
   }
 
-  const captions = value
+  const captions = list
     .filter((item): item is string => typeof item === "string")
     .map((item) => item.trim().replace(/^["'“”]+|["'“”]+$/g, "").trim())
     .filter((item) => item.length > 0)

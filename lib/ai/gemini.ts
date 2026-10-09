@@ -1,19 +1,8 @@
+import { AiError, type JsonRequest, type JsonResponse } from "./errors";
+import { describeMissingKey, readApiKey } from "./keys";
+
 const DEFAULT_MODEL = "gemini-3.8-flash";
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-
-export type GeminiErrorKind = "not_configured" | "blocked" | "http" | "empty";
-
-export class GeminiError extends Error {
-  constructor(
-    message: string,
-    readonly kind: GeminiErrorKind,
-  ) {
-    super(message);
-    this.name = "GeminiError";
-  }
-}
-
-export type GeminiImage = { mimeType: string; base64: string };
 
 type GeminiResponse = {
   candidates?: Array<{
@@ -24,35 +13,14 @@ type GeminiResponse = {
   error?: { message?: string };
 };
 
-// Keys pasted into a dashboard often arrive wrapped in quotes or with stray
-// whitespace; anything outside printable ASCII would also crash fetch's header encoding.
-function readApiKey(): string | null {
-  const raw = process.env.GEMINI_API_KEY;
-  if (!raw) {
-    return null;
-  }
-  const key = raw.trim().replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "");
-  return /^[\x21-\x7e]{20,200}$/.test(key) ? key : null;
-}
-
 export function isGeminiConfigured(): boolean {
-  return readApiKey() !== null;
+  return readApiKey("GEMINI_API_KEY") !== null;
 }
 
-// Asks Gemini for a JSON array of strings. Returns the raw text; parsing is the caller's job.
-export async function generateJsonArray(input: {
-  prompt: string;
-  image: GeminiImage | null;
-  itemCount: number;
-}): Promise<{ model: string; text: string }> {
-  const apiKey = readApiKey();
+export async function geminiGenerateJson(input: JsonRequest): Promise<JsonResponse> {
+  const apiKey = readApiKey("GEMINI_API_KEY");
   if (!apiKey) {
-    throw new GeminiError(
-      process.env.GEMINI_API_KEY
-        ? "GEMINI_API_KEY is malformed. It must be just the key, with no quotes, spaces, or extra text."
-        : "Caption generation is not configured yet (missing GEMINI_API_KEY).",
-      "not_configured",
-    );
+    throw new AiError(describeMissingKey("GEMINI_API_KEY"), "not_configured");
   }
   const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
 
@@ -72,10 +40,16 @@ export async function generateJsonArray(input: {
         temperature: 1.1,
         responseMimeType: "application/json",
         responseSchema: {
-          type: "ARRAY",
-          minItems: input.itemCount,
-          maxItems: input.itemCount,
-          items: { type: "STRING" },
+          type: "OBJECT",
+          required: ["captions"],
+          properties: {
+            captions: {
+              type: "ARRAY",
+              minItems: input.itemCount,
+              maxItems: input.itemCount,
+              items: { type: "STRING" },
+            },
+          },
         },
       },
     }),
@@ -83,23 +57,20 @@ export async function generateJsonArray(input: {
 
   const body = (await response.json().catch(() => ({}))) as GeminiResponse;
   if (!response.ok) {
-    throw new GeminiError(
+    throw new AiError(
       `The caption model returned an error (${response.status}): ${body.error?.message ?? "unknown"}`,
       "http",
     );
   }
   if (body.promptFeedback?.blockReason) {
-    throw new GeminiError(
-      "The model declined this request. Try a different note or photo.",
-      "blocked",
-    );
+    throw new AiError("The model declined this request. Try a different note or photo.", "blocked");
   }
 
   const candidate = body.candidates?.[0];
   const text = candidate?.content?.parts?.map((part) => part.text ?? "").join("");
   if (!text) {
     const reason = candidate?.finishReason ? ` (${candidate.finishReason})` : "";
-    throw new GeminiError(`The model returned no captions${reason}. Try again.`, "empty");
+    throw new AiError(`The model returned no captions${reason}. Try again.`, "empty");
   }
-  return { model, text };
+  return { model: `gemini/${model}`, text };
 }
