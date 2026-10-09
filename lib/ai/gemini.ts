@@ -1,4 +1,4 @@
-const DEFAULT_MODEL = "gemini-2.5-flash";
+const DEFAULT_MODEL = "gemini-3.8-flash";
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 export type GeminiErrorKind = "not_configured" | "blocked" | "http" | "empty";
@@ -70,8 +70,6 @@ export async function generateJsonArray(input: {
       contents: [{ role: "user", parts }],
       generationConfig: {
         temperature: 1.1,
-        // Captions don't benefit from the model's "thinking" pass; skipping it cuts latency.
-        thinkingConfig: { thinkingBudget: 0 },
         responseMimeType: "application/json",
         responseSchema: {
           type: "ARRAY",
