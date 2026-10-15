@@ -28,6 +28,14 @@ describe("parseCaptions", () => {
     });
   });
 
+  it("tolerates prose and code fences around the JSON", () => {
+    const wrapped = `Here you go:\n\`\`\`json\n{"captions": ${EIGHT}}\n\`\`\`\nEnjoy!`;
+    expect(parseCaptions(wrapped)).toEqual({
+      ok: true,
+      captions: ["a", "b", "c", "d", "e", "f", "g", "h"],
+    });
+  });
+
   it("rejects non-JSON and JSON without a captions array", () => {
     expect(parseCaptions("not json").ok).toBe(false);
     expect(parseCaptions('{"text": "one"}')).toEqual({

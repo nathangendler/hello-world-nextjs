@@ -81,19 +81,25 @@ export async function createMoment(raw: {
   }
 
   const prompt = buildPrompt({ note });
-  let generated: { model: string; text: string };
-  try {
-    generated = await generateJson({ prompt, image, itemCount: CAPTION_COUNT });
-  } catch (error) {
-    if (error instanceof AiError) {
-      return { ok: false, errors: [error.message] };
+  // Sampling is random; one malformed answer shouldn't cost the user a retry.
+  let generated: { model: string; text: string } | null = null;
+  let parsed: ReturnType<typeof parseCaptions> = { ok: false, reason: "not attempted" };
+  for (let attempt = 0; attempt < 2 && !parsed.ok; attempt += 1) {
+    try {
+      generated = await generateJson({ prompt, image, itemCount: CAPTION_COUNT });
+    } catch (error) {
+      if (error instanceof AiError) {
+        return { ok: false, errors: [error.message] };
+      }
+      throw error;
     }
-    throw error;
+    parsed = parseCaptions(generated.text);
   }
-
-  const parsed = parseCaptions(generated.text);
   if (!parsed.ok) {
     return { ok: false, errors: [`The model's answer could not be used (${parsed.reason}). Try again.`] };
+  }
+  if (!generated) {
+    return { ok: false, errors: ["The model did not answer. Try again."] };
   }
 
   const { data: moment, error: momentError } = await supabase

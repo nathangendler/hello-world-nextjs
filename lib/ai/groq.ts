@@ -7,7 +7,8 @@ const API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 type GroqResponse = {
   choices?: Array<{ message?: { content?: string | null }; finish_reason?: string }>;
-  error?: { message?: string };
+  // On a JSON-mode failure Groq returns the raw text it rejected; our own parser gets a go at it.
+  error?: { message?: string; code?: string; failed_generation?: string };
 };
 
 export function isGroqConfigured(): boolean {
@@ -36,12 +37,18 @@ export async function groqGenerateJson(input: JsonRequest): Promise<JsonResponse
       model,
       messages: [{ role: "user", content }],
       temperature: 1.0,
-      max_tokens: 600,
+      max_tokens: 800,
       response_format: { type: "json_object" },
+      // Qwen 3.8 is a reasoning model; without these its thinking can leak into the JSON.
+      reasoning_effort: "none",
+      reasoning_format: "hidden",
     }),
   });
 
   const body = (await response.json().catch(() => ({}))) as GroqResponse;
+  if (!response.ok && body.error?.failed_generation) {
+    return { model: `groq/${model}`, text: body.error.failed_generation };
+  }
   if (!response.ok) {
     throw new AiError(
       `The caption model returned an error (${response.status}): ${body.error?.message ?? "unknown"}`,

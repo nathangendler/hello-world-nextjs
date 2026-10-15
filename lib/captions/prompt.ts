@@ -18,11 +18,22 @@ export type ParsedCaptions =
   | { ok: true; captions: string[] }
   | { ok: false; reason: string };
 
+// Models sometimes wrap JSON in prose or code fences; keep just the outermost object/array.
+function extractJson(raw: string): string {
+  const start = raw.search(/[[{]/);
+  if (start < 0) {
+    return raw;
+  }
+  const closer = raw[start] === "[" ? "]" : "}";
+  const end = raw.lastIndexOf(closer);
+  return end > start ? raw.slice(start, end + 1) : raw.slice(start);
+}
+
 // The model is asked for JSON, but it is still untrusted output: check the shape here.
 export function parseCaptions(raw: string): ParsedCaptions {
   let value: unknown;
   try {
-    value = JSON.parse(raw);
+    value = JSON.parse(extractJson(raw));
   } catch {
     return { ok: false, reason: "Response was not valid JSON." };
   }
