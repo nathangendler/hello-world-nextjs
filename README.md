@@ -7,9 +7,10 @@ Gemini.
 ## What it does
 
 - **Post a moment** (`/generate`, signed in): upload a photo and, optionally, a line about what
-  the caption should say. The AI writes eight captions. You pick head-to-head, Jukebox style,
-  through a three-round bracket (7 picks). The survivor is posted with your photo. Each pick is
-  saved as you go, so an unfinished bracket can be resumed from the dashboard.
+  the caption should say. The AI writes eight captions. You pick head-to-head, Jukebox style:
+  the winner stays on and the next caption takes the loser's spot, until all eight have had a
+  turn (7 picks). The last one standing is posted with your photo. Each pick is saved as you
+  go, so an unfinished ladder can be resumed from the dashboard.
 - **Moments** (`/`, public): posted photos with their winning caption, newest or most liked.
   Signed-in users can like a moment once; the copy button puts the caption on your clipboard.
 - **Daily photo challenge** (home and generate pages): a rotating NYC prompt for what to shoot.

@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
-import type { Pick } from "./bracket";
+import type { Pick } from "./ladder";
 
 export type Post = {
   id: string;

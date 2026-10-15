@@ -39,7 +39,7 @@ export function PostCard({
           height={900}
           sizes="(max-width: 672px) 100vw, 672px"
           priority={large}
-          className={`w-full object-cover ${large ? "max-h-[32rem]" : "max-h-96"}`}
+          className={`mx-auto h-auto w-auto max-w-full object-contain ${large ? "max-h-[36rem]" : "max-h-[28rem]"}`}
         />
       </Link>
       <div className="flex flex-col gap-3 p-4">

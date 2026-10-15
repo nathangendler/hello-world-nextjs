@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { recordPick } from "@/lib/actions/pick";
-import { bracketState, roundLabel, type BracketState, type Pick } from "@/lib/captions/bracket";
+import { ladderState, type LadderState, type Pick } from "@/lib/captions/ladder";
 import { BRACKET_PICKS } from "@/lib/captions/config";
 import type { Caption } from "@/lib/captions/moments";
 
@@ -24,16 +24,15 @@ export function BracketPicker({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const state: BracketState = bracketState(captionIds, picks);
+  const state: LadderState = ladderState(captionIds, picks);
 
   if (state.kind === "done") {
-    return (
-      <p className="text-gray-500">Posting your moment…</p>
-    );
+    return <p className="text-gray-500">Posting your moment…</p>;
   }
 
   function choose(winnerId: string) {
-    const loserId = state.kind === "picking" ? state.pair.find((id) => id !== winnerId) : undefined;
+    if (state.kind !== "picking") return;
+    const loserId = state.pair.find((id) => id !== winnerId);
     if (!loserId) return;
     setChosen(winnerId);
     setError(null);
@@ -60,7 +59,7 @@ export function BracketPicker({
   return (
     <section className="flex flex-col gap-4">
       <div className="flex items-center justify-between text-sm">
-        <span className="font-semibold">{roundLabel(state)}</span>
+        <span className="font-semibold">Which caption is better?</span>
         <span className="text-gray-500">
           Pick {state.pickIndex + 1} of {BRACKET_PICKS}
         </span>
@@ -76,13 +75,13 @@ export function BracketPicker({
         ))}
       </div>
 
-      <p className="text-lg font-semibold">Which caption is better?</p>
       <div className="grid gap-3 sm:grid-cols-2">
         {state.pair.map((captionId, index) => {
           const selected = chosen === captionId;
+          const isChampion = state.champion === captionId;
           return (
             <button
-              key={captionId}
+              key={`${index}-${captionId}`}
               type="button"
               disabled={pending}
               onClick={() => choose(captionId)}
@@ -92,14 +91,22 @@ export function BracketPicker({
                   : "border-gray-200 hover:border-gray-400 dark:border-gray-800 dark:hover:border-gray-500"
               }`}
             >
-              <span className="mb-2 block text-xs font-medium uppercase tracking-wide opacity-60">
+              <span className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide opacity-60">
                 {index === 0 ? "This" : "That"}
+                {isChampion && (
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 normal-case tracking-normal text-amber-800 opacity-100">
+                    Still standing
+                  </span>
+                )}
               </span>
               {textById.get(captionId)}
             </button>
           );
         })}
       </div>
+      <p className="text-xs text-gray-500">
+        The winner stays on. A new caption takes the loser&apos;s spot until all eight have had a turn.
+      </p>
       {error && <p className="text-sm text-red-600">{error}</p>}
     </section>
   );

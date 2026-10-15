@@ -2,16 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { bracketState, isPickFor, type BracketState } from "@/lib/captions/bracket";
+import { ladderState, isPickFor, type LadderState } from "@/lib/captions/ladder";
 import { fetchMoment } from "@/lib/captions/moments";
 
 export type PickResult =
-  | { ok: true; state: BracketState }
+  | { ok: true; state: LadderState }
   | { ok: false; error: string };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// Records one bracket pick. The bracket is replayed from stored picks so a stale
+// Records one ladder pick. The ladder is replayed from stored picks so a stale
 // or forged pick is rejected; the seventh pick posts the moment with its champion.
 export async function recordPick(input: {
   momentId: string;
@@ -37,12 +37,12 @@ export async function recordPick(input: {
     return { ok: false, error: "This moment has already been posted." };
   }
 
-  const current = bracketState(
+  const current = ladderState(
     moment.captions.map((caption) => caption.id),
     moment.picks,
   );
   if (current.kind !== "picking") {
-    return { ok: false, error: "This bracket is already finished." };
+    return { ok: false, error: "This moment's picks are already finished." };
   }
   const pick = { winnerId: input.winnerId, loserId: input.loserId };
   if (!isPickFor(pick, current.pair)) {
@@ -60,7 +60,7 @@ export async function recordPick(input: {
     return { ok: false, error: `Could not save your pick: ${pickError.message}` };
   }
 
-  const next = bracketState(
+  const next = ladderState(
     moment.captions.map((caption) => caption.id),
     [...moment.picks, pick],
   );

@@ -157,7 +157,7 @@ export function GenerateForm({ userId }: { userId: string }) {
               : `Generate ${CAPTION_COUNT} captions`}
         </button>
         <p className="text-xs text-gray-500">
-          You&apos;ll pick your favorite head-to-head until one caption is left. That one gets posted.
+          You&apos;ll pick head-to-head: the winner stays on until all eight have had a turn. The last one standing gets posted.
         </p>
         {status.kind === "failed" && (
           <ul className="list-disc pl-5 text-sm text-red-600">

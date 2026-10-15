@@ -67,7 +67,7 @@ export default async function MomentPage({
           height={900}
           sizes="(max-width: 672px) 100vw, 672px"
           priority
-          className="max-h-80 w-full object-cover"
+          className="mx-auto h-auto max-h-[28rem] w-auto max-w-full object-contain"
         />
       </div>
       <BracketPicker momentId={moment.id} captions={moment.captions} initialPicks={moment.picks} />
