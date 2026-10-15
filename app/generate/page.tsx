@@ -1,6 +1,5 @@
 import { requireCompleteProfile } from "@/lib/auth";
 import { isAiConfigured } from "@/lib/ai/provider";
-import { DailyPromptCard } from "@/components/DailyPromptCard";
 import { GenerateForm } from "@/components/GenerateForm";
 
 export default async function GeneratePage() {
@@ -17,9 +16,6 @@ export default async function GeneratePage() {
           Caption generation is not configured on this deployment yet (no valid GROQ_API_KEY or GEMINI_API_KEY).
         </p>
       )}
-      <div className="mt-6">
-        <DailyPromptCard showCta={false} />
-      </div>
       <GenerateForm userId={profile.id} />
     </main>
   );

@@ -36,7 +36,7 @@ export default async function Home({
         </div>
       </section>
 
-      <DailyPromptCard showCta />
+      <DailyPromptCard />
 
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between">

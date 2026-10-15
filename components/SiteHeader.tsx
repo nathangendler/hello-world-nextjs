@@ -10,7 +10,7 @@ export async function SiteHeader() {
     <header className="border-b border-gray-200 dark:border-gray-800">
       <nav className="mx-auto flex max-w-3xl items-center gap-5 px-6 py-3 text-sm">
         <Link href="/" className="font-semibold">
-          Caption the City
+          Home
         </Link>
         <Link href="/generate">Post a moment</Link>
         {profile && <Link href="/dashboard">Dashboard</Link>}
