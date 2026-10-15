@@ -30,8 +30,8 @@ export function PostCard({
   large: boolean;
 }) {
   return (
-    <article className="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800">
-      <Link href={`/g/${post.id}`} className="block bg-gray-100 dark:bg-gray-900">
+    <article className="card overflow-hidden">
+      <Link href={`/g/${post.id}`} className="block bg-gray-soft">
         <Image
           src={post.imageUrl}
           alt={post.caption}
@@ -43,14 +43,12 @@ export function PostCard({
         />
       </Link>
       <div className="flex flex-col gap-3 p-4">
-        <p className={`leading-snug ${large ? "text-2xl font-semibold" : "text-lg font-medium"}`}>
-          {post.caption}
-        </p>
+        <p className={`title leading-snug ${large ? "text-[22px]" : "text-[18px]"}`}>{post.caption}</p>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs text-gray-500">
+          <div className="flex items-center gap-2 text-[12px] text-subtle">
             <span>{timeAgo(post.postedAt)}</span>
             {isMine && (
-              <span className="rounded-full bg-green-100 px-2 py-0.5 font-medium text-green-800">
+              <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] font-bold text-ink">
                 Yours
               </span>
             )}

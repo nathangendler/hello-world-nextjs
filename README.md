@@ -1,6 +1,6 @@
-# Caption the City
+# Caption This
 
-AI-written captions for your New York City moments, rated by everyone. A Next.js app
+AI-written captions for your photos, picked head-to-head. A Next.js app
 deployed on Vercel from GitHub, backed by Supabase (Postgres, Auth, Storage) and Google
 Gemini.
 
@@ -13,7 +13,6 @@ Gemini.
   go, so an unfinished ladder can be resumed from the dashboard.
 - **Moments** (`/`, public): posted photos with their winning caption, newest or most liked.
   Signed-in users can like a moment once; the copy button puts the caption on your clipboard.
-- **Daily photo challenge** (home and generate pages): a rotating NYC prompt for what to shoot.
 - **Dashboard** (`/dashboard`, signed in): your posted moments, likes received, and any
   bracket you still need to finish.
 - Also: `/login` with Google, `/onboarding` for first and last name, `/profile` to edit name,
@@ -27,9 +26,8 @@ the model name, all eight captions, every bracket pick, and the winner.
 The persona is Sam: a Columbia junior from the Midwest, chronically online, exploring the
 city on weekends.
 
-- **Why come back daily?** Sam takes photos every weekend and needs captions for them. The
-  bracket turns "pick a caption" into a 30-second game, the daily photo challenge suggests
-  what to shoot, and the feed shows what everyone else posted.
+- **Why come back daily?** Sam takes photos every weekend and needs captions for them. The ladder turns "pick a caption" into a 30-second game, and the feed shows what everyone
+  else posted.
 - **How does it become a content source?** Every posted moment is a public, shareable page.
   Reading and liking take one tap; posting is one photo. The feed only ever shows a caption
   its owner chose over seven others, so the quality bar is set by the users, not the model.

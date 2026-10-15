@@ -90,11 +90,11 @@ export function GenerateForm({ userId }: { userId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="mt-6 flex flex-col gap-6">
+    <form onSubmit={handleSubmit} noValidate className="mt-5 flex flex-col gap-5">
       <div>
         <label
           htmlFor="photo"
-          className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-6 text-center transition hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500"
+          className="card flex cursor-pointer flex-col items-center justify-center gap-2 border-dashed p-6 text-center transition hover:border-ink/60"
         >
           {preview ? (
             <Image
@@ -103,18 +103,18 @@ export function GenerateForm({ userId }: { userId: string }) {
               width={640}
               height={480}
               unoptimized
-              className="max-h-80 w-auto rounded-xl object-contain"
+              className="max-h-80 w-auto rounded-md object-contain"
             />
           ) : (
             <>
-              <span className="text-3xl" aria-hidden>
+              <span className="text-2xl" aria-hidden>
                 📷
               </span>
-              <span className="font-medium">Choose a photo</span>
-              <span className="text-sm text-gray-500">JPEG, PNG, or WebP</span>
+              <span className="text-[13px] font-bold text-ink">Choose a photo</span>
+              <span className="text-[12px] text-subtle">JPEG, PNG, or WebP</span>
             </>
           )}
-          {preview && <span className="text-sm text-gray-500">Tap to change</span>}
+          {preview && <span className="text-[12px] text-subtle">Tap to change</span>}
         </label>
         <input
           id="photo"
@@ -126,9 +126,9 @@ export function GenerateForm({ userId }: { userId: string }) {
       </div>
 
       <div>
-        <label htmlFor="note" className="text-sm font-medium">
+        <label htmlFor="note" className="label">
           Anything the caption should say?{" "}
-          <span className="font-normal text-gray-500">(optional)</span>
+          <span className="font-normal text-subtle">(optional)</span>
         </label>
         <textarea
           id="note"
@@ -137,30 +137,26 @@ export function GenerateForm({ userId }: { userId: string }) {
           rows={2}
           maxLength={MAX_NOTE_LENGTH}
           placeholder="e.g. something about how I waited 40 minutes for this bagel"
-          className="mt-1 w-full rounded-xl border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700"
+          className="input mt-1.5"
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-[11px] text-muted">
           {note.length}/{MAX_NOTE_LENGTH}
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <button
-          type="submit"
-          disabled={busy || !photo}
-          className="w-full rounded-xl bg-foreground px-5 py-3 text-base font-semibold text-background disabled:opacity-50 sm:w-auto"
-        >
+        <button type="submit" disabled={busy || !photo} className="btn-primary w-full sm:w-auto">
           {status.kind === "uploading"
             ? "Uploading photo…"
             : status.kind === "generating"
               ? "Writing captions…"
               : `Generate ${CAPTION_COUNT} captions`}
         </button>
-        <p className="text-xs text-gray-500">
+        <p className="text-[12px] text-subtle">
           You&apos;ll pick head-to-head: the winner stays on until all eight have had a turn. The last one standing gets posted.
         </p>
         {status.kind === "failed" && (
-          <ul className="list-disc pl-5 text-sm text-red-600">
+          <ul className="list-disc pl-5 text-[13px] text-danger">
             {status.errors.map((error) => (
               <li key={error}>{error}</li>
             ))}

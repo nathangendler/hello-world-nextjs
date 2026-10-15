@@ -33,8 +33,7 @@ function validate(
   return errors;
 }
 
-const inputClass =
-  "mt-1 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2";
+const inputClass = "input mt-1.5";
 
 export function ProfileForm({
   profile,
@@ -107,11 +106,11 @@ export function ProfileForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="mt-6 flex flex-col gap-5">
+    <form onSubmit={handleSubmit} noValidate className="mt-5 flex flex-col gap-5">
       <div className="flex items-center gap-4">
         <Avatar url={profile.avatar_url} name={displayName(profile)} size={72} />
         <div className="flex-1">
-          <label htmlFor="photo" className="text-sm font-medium">
+          <label htmlFor="photo" className="label">
             Profile photo
           </label>
           <input
@@ -120,15 +119,15 @@ export function ProfileForm({
             type="file"
             accept={PHOTO_TYPES.join(",")}
             onChange={(event) => setPhoto(event.target.files?.[0] ?? null)}
-            className="mt-1 block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-gray-200 file:px-3 file:py-1.5 file:text-gray-900"
+            className="mt-1.5 block w-full text-[13px] text-subtle file:mr-3 file:rounded-md file:border file:border-ink file:bg-transparent file:px-3 file:py-1.5 file:text-[12px] file:font-bold file:text-ink"
           />
-          {errors.photo && <p className="mt-1 text-sm text-red-600">{errors.photo}</p>}
+          {errors.photo && <p className="mt-1 text-[13px] text-danger">{errors.photo}</p>}
         </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="first-name" className="text-sm font-medium">
+          <label htmlFor="first-name" className="label">
             First name
           </label>
           <input
@@ -139,11 +138,11 @@ export function ProfileForm({
             className={inputClass}
           />
           {errors.firstName && (
-            <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+            <p className="mt-1 text-[13px] text-danger">{errors.firstName}</p>
           )}
         </div>
         <div>
-          <label htmlFor="last-name" className="text-sm font-medium">
+          <label htmlFor="last-name" className="label">
             Last name
           </label>
           <input
@@ -154,14 +153,14 @@ export function ProfileForm({
             className={inputClass}
           />
           {errors.lastName && (
-            <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+            <p className="mt-1 text-[13px] text-danger">{errors.lastName}</p>
           )}
         </div>
       </div>
 
       <div>
-        <label htmlFor="bio" className="text-sm font-medium">
-          Bio <span className="text-gray-500">(optional)</span>
+        <label htmlFor="bio" className="label">
+          Bio <span className="font-normal text-subtle">(optional)</span>
         </label>
         <textarea
           id="bio"
@@ -177,13 +176,13 @@ export function ProfileForm({
         <button
           type="submit"
           disabled={status.kind === "saving"}
-          className="rounded-lg bg-foreground px-5 py-2.5 font-medium text-background disabled:opacity-60"
+          className="btn-primary"
         >
           {status.kind === "saving" ? "Saving…" : submitLabel}
         </button>
-        {status.kind === "saved" && <p className="text-sm text-green-600">Saved.</p>}
+        {status.kind === "saved" && <p className="text-[13px] font-bold text-ink">Saved.</p>}
         {status.kind === "failed" && (
-          <p className="text-sm text-red-600">{status.message}</p>
+          <p className="text-[13px] text-danger">{status.message}</p>
         )}
       </div>
     </form>

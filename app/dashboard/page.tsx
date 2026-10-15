@@ -12,67 +12,64 @@ export default async function DashboardPage() {
   const likes = posted.reduce((sum, moment) => sum + moment.likeCount, 0);
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8 sm:px-8">
+    <main className="mx-auto flex w-full max-w-2xl flex-col gap-7 px-4 py-7 sm:px-8">
       <section>
-        <p className="text-sm font-medium uppercase tracking-wide text-gray-500">Members only</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight">Welcome, {profile.first_name}!</h1>
-        <div className="mt-4 flex items-center gap-4 rounded-2xl border border-gray-200 p-5 dark:border-gray-800">
-          <Avatar url={profile.avatar_url} name={displayName(profile)} size={64} />
-          <div>
-            <p className="text-lg font-semibold">{displayName(profile)}</p>
-            <p className="text-sm text-gray-500">{profile.email}</p>
-            {profile.bio && <p className="mt-2 text-sm">{profile.bio}</p>}
-            <Link href="/profile" className="mt-2 inline-block text-sm underline">
+        <span className="eyebrow">Members only</span>
+        <h1 className="title mt-1 text-[28px] leading-tight">Welcome, {profile.first_name}!</h1>
+        <div className="card mt-4 flex items-center gap-4 p-4">
+          <Avatar url={profile.avatar_url} name={displayName(profile)} size={56} />
+          <div className="min-w-0">
+            <p className="text-[15px] font-extrabold text-ink">{displayName(profile)}</p>
+            <p className="text-[12px] text-subtle">{profile.email}</p>
+            {profile.bio && <p className="mt-1 text-[13px] text-ink">{profile.bio}</p>}
+            <Link href="/profile" className="mt-2 inline-block text-[12px] font-bold text-ink underline">
               Edit your profile
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-gray-200 p-4 dark:border-gray-800">
-          <p className="text-3xl font-bold">{posted.length}</p>
-          <p className="text-sm text-gray-500">moments posted</p>
+      <section className="grid grid-cols-2 gap-3">
+        <div className="card p-4">
+          <p className="title text-[28px]">{posted.length}</p>
+          <p className="text-[12px] text-subtle">moments posted</p>
         </div>
-        <div className="rounded-2xl border border-gray-200 p-4 dark:border-gray-800">
-          <p className="text-3xl font-bold">{likes}</p>
-          <p className="text-sm text-gray-500">likes received</p>
+        <div className="card p-4">
+          <p className="title text-[28px]">{likes}</p>
+          <p className="text-[12px] text-subtle">likes received</p>
         </div>
       </section>
 
       <section className="flex flex-col gap-4">
-        <div className="flex items-baseline justify-between">
-          <h2 className="text-2xl font-semibold">Your moments</h2>
-          <Link href="/generate" className="text-sm underline">
+        <div className="flex items-center justify-between">
+          <span className="eyebrow">Your moments</span>
+          <Link href="/generate" className="btn-outline btn-sm">
             Post another
           </Link>
         </div>
         {moments.length === 0 ? (
-          <p className="text-gray-500">You haven&apos;t posted a moment yet.</p>
+          <p className="text-[13px] text-subtle">You haven&apos;t posted a moment yet.</p>
         ) : (
-          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {moments.map((moment) => (
               <li key={moment.id}>
-                <Link
-                  href={`/g/${moment.id}`}
-                  className="block overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800"
-                >
+                <Link href={`/g/${moment.id}`} className="card block overflow-hidden">
                   <Image
                     src={moment.imageUrl}
                     alt={moment.caption ?? "Unfinished moment"}
                     width={400}
                     height={400}
                     sizes="(max-width: 672px) 50vw, 220px"
-                    className="aspect-square w-full object-cover"
+                    className="aspect-square w-full bg-gray-soft object-cover"
                   />
-                  <div className="p-3 text-sm">
+                  <div className="p-3 text-[12px]">
                     {moment.postedAt ? (
                       <>
-                        <p className="line-clamp-2">{moment.caption}</p>
-                        <p className="mt-1 text-xs text-gray-500">♥ {moment.likeCount}</p>
+                        <p className="line-clamp-2 font-bold text-ink">{moment.caption}</p>
+                        <p className="mt-1 text-subtle">♥ {moment.likeCount}</p>
                       </>
                     ) : (
-                      <p className="font-medium text-amber-700">Finish picking →</p>
+                      <p className="font-bold text-accent-strong">Finish picking →</p>
                     )}
                   </div>
                 </Link>

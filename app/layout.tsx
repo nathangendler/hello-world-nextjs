@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import Link from "next/link";
+import "./globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 
 const geistSans = Geist({
@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Caption the City",
-  description: "Eight AI captions for your NYC photo. Pick head-to-head until one wins.",
+  title: "Caption This",
+  description: "Eight AI captions for your photo. Pick head-to-head until one wins.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -28,8 +28,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <SiteHeader />
         {children}
-        <footer className="mt-auto px-6 py-4 text-center text-xs text-gray-500">
-          <Link href="/privacy" className="underline">
+        <footer className="mt-auto border-t border-hairline px-6 py-4 text-center text-[11px] text-muted">
+          <Link href="/privacy" className="hover:text-ink">
             Privacy Policy
           </Link>
         </footer>

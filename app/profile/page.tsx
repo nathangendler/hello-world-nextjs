@@ -5,9 +5,10 @@ export default async function ProfilePage() {
   const profile = await requireCompleteProfile();
 
   return (
-    <main className="mx-auto w-full max-w-xl p-8">
-      <h1 className="text-3xl font-bold">Your profile</h1>
-      <p className="mt-2 text-gray-500">Signed in as {profile.email}</p>
+    <main className="mx-auto w-full max-w-xl px-4 py-7 sm:px-8">
+      <span className="eyebrow">Profile</span>
+      <h1 className="title mt-1 text-[28px] leading-tight">Your profile</h1>
+      <p className="mt-1 text-[13px] text-subtle">Signed in as {profile.email}</p>
       <ProfileForm profile={profile} submitLabel="Save changes" redirectTo={null} />
     </main>
   );

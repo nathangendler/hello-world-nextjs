@@ -16,7 +16,7 @@ export function Avatar({
         alt={name}
         width={size}
         height={size}
-        className="rounded-full object-cover"
+        className="rounded-full object-cover ring-1 ring-card-border"
         style={{ width: size, height: size }}
       />
     );
@@ -25,7 +25,7 @@ export function Avatar({
   return (
     <span
       aria-hidden
-      className="flex items-center justify-center rounded-full bg-gray-200 font-semibold text-gray-700"
+      className="flex items-center justify-center rounded-full bg-gray-soft font-extrabold text-ink ring-1 ring-card-border"
       style={{ width: size, height: size, fontSize: size * 0.4 }}
     >
       {name.charAt(0).toUpperCase()}

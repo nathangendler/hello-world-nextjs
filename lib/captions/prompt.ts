@@ -2,7 +2,7 @@ import { CAPTION_COUNT, MAX_CAPTION_LENGTH } from "./config";
 
 export function buildPrompt(input: { note: string | null }): string {
   const lines = [
-    "You write short social media captions for a college student who just moved to New York City. A photo of their moment is attached.",
+    "You write short social media captions for a college student. A photo of their moment is attached.",
     `Write exactly ${CAPTION_COUNT} distinct captions for this photo. Make them genuinely different from each other: mix hype, dry humor, self-deprecating, poetic, wholesome, deadpan, nostalgic, and chaotic-online energy.`,
     "Each caption is a single line under 110 characters, with no hashtags, no surrounding quotation marks, and at most one emoji.",
     "Reference specific details you can actually see in the photo. Never invent names of people.",

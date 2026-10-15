@@ -11,9 +11,9 @@ export default async function AlbumsPage() {
 
   if (error) {
     return (
-      <main className="mx-auto max-w-2xl p-8">
-        <h1 className="text-3xl font-bold">Albums</h1>
-        <p className="mt-4 text-red-600">Failed to load albums: {error.message}</p>
+      <main className="mx-auto max-w-2xl px-4 py-7 sm:px-8">
+        <h1 className="title text-[28px]">Albums</h1>
+        <p className="mt-4 text-[13px] text-danger">Failed to load albums: {error.message}</p>
       </main>
     );
   }
@@ -21,27 +21,28 @@ export default async function AlbumsPage() {
   const albums: Album[] = data ?? [];
 
   return (
-    <main className="mx-auto max-w-2xl p-8">
-      <h1 className="text-3xl font-bold">Albums</h1>
-      <p className="mt-1 text-sm text-gray-500">
+    <main className="mx-auto max-w-2xl px-4 py-7 sm:px-8">
+      <span className="eyebrow">Supabase demo</span>
+      <h1 className="title mt-1 text-[28px]">Albums</h1>
+      <p className="mt-1 text-[12px] text-subtle">
         {albums.length} rows loaded from Supabase
       </p>
-      <ul className="mt-6 divide-y divide-gray-200 rounded-lg border border-gray-200">
+      <ul className="card mt-5 divide-y divide-hairline">
         {albums.map((album) => (
           <li key={album.id} className="flex items-center justify-between p-4">
             <div>
-              <p className="font-semibold">{album.title}</p>
-              <p className="text-sm text-gray-500">
+              <p className="font-extrabold text-ink">{album.title}</p>
+              <p className="text-[12px] text-subtle">
                 {album.artist} · {album.year}
               </p>
             </div>
-            <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-900">
+            <span className="rounded-full border border-ink px-3 py-1 text-[12px] font-bold text-ink">
               {album.rating}/10
             </span>
           </li>
         ))}
       </ul>
-      <Link href="/" className="mt-6 inline-block text-sm underline">
+      <Link href="/" className="btn-outline btn-sm mt-5">
         Back home
       </Link>
     </main>

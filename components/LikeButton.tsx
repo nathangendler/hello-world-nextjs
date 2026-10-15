@@ -22,11 +22,7 @@ export function LikeButton({
 
   if (!canLike) {
     return (
-      <Link
-        href="/login"
-        className="flex items-center gap-1.5 rounded-full border border-gray-300 px-3 py-1.5 text-sm text-gray-500 dark:border-gray-700"
-        title="Sign in to like"
-      >
+      <Link href="/login" className="btn-outline btn-sm gap-1.5 text-subtle" title="Sign in to like">
         <span aria-hidden>♡</span> {count}
       </Link>
     );
@@ -60,15 +56,14 @@ export function LikeButton({
         onClick={toggle}
         disabled={pending}
         aria-pressed={isLiked}
-        className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition disabled:opacity-70 ${
-          isLiked
-            ? "border-rose-500 bg-rose-500 text-white"
-            : "border-gray-300 hover:border-rose-400 dark:border-gray-700"
-        }`}
+        className={`btn-outline btn-sm gap-1.5 ${isLiked ? "border-liked text-liked" : ""}`}
       >
-        <span aria-hidden>{isLiked ? "♥" : "♡"}</span> {count}
+        <span aria-hidden className="text-base leading-none">
+          {isLiked ? "♥" : "♡"}
+        </span>
+        {count}
       </button>
-      {error && <span className="text-xs text-red-600">{error}</span>}
+      {error && <span className="text-xs text-danger">{error}</span>}
     </div>
   );
 }

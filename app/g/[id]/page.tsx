@@ -22,7 +22,7 @@ export default async function MomentPage({
   if (post) {
     const myLikes = await fetchMyLikes([post.id], profile !== null);
     return (
-      <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 sm:px-8">
+      <main className="mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 py-7 sm:px-8">
         <PostCard
           post={post}
           liked={myLikes.has(post.id)}
@@ -31,15 +31,15 @@ export default async function MomentPage({
           large
         />
         {post.userNote && (
-          <p className="text-sm text-gray-500">
+          <p className="text-[12px] text-subtle">
             Asked for: <span className="italic">{post.userNote}</span>
           </p>
         )}
-        <div className="flex gap-4 text-sm">
-          <Link href="/generate" className="underline">
+        <div className="flex gap-3">
+          <Link href="/generate" className="btn-outline btn-sm">
             Post your own moment
           </Link>
-          <Link href="/" className="underline">
+          <Link href="/" className="btn-outline btn-sm">
             Back to moments
           </Link>
         </div>
@@ -47,7 +47,7 @@ export default async function MomentPage({
     );
   }
 
-  // Not posted: only the owner can see it (RLS), and it is their bracket to finish.
+  // Not posted: only the owner can see it (RLS), and it is their ladder to finish.
   // Anonymous visitors have no access to picks at all, so don't even look.
   if (!profile) {
     notFound();
@@ -58,8 +58,8 @@ export default async function MomentPage({
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 sm:px-8">
-      <div className="overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-900">
+    <main className="mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 py-7 sm:px-8">
+      <div className="overflow-hidden rounded-lg bg-gray-soft">
         <Image
           src={moment.imageUrl}
           alt="Your moment"

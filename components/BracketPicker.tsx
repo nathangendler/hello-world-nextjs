@@ -27,7 +27,7 @@ export function BracketPicker({
   const state: LadderState = ladderState(captionIds, picks);
 
   if (state.kind === "done") {
-    return <p className="text-gray-500">Posting your moment…</p>;
+    return <p className="text-[13px] text-subtle">Posting your moment…</p>;
   }
 
   function choose(winnerId: string) {
@@ -57,25 +57,16 @@ export function BracketPicker({
   }
 
   return (
-    <section className="flex flex-col gap-4">
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-semibold">Which caption is better?</span>
-        <span className="text-gray-500">
-          Pick {state.pickIndex + 1} of {BRACKET_PICKS}
+    <section className="flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <span className="eyebrow">Head to head</span>
+        <span className="text-[10.5px] text-muted">
+          pick {state.pickIndex + 1} of {BRACKET_PICKS}
         </span>
       </div>
-      <div className="flex gap-1" aria-hidden>
-        {Array.from({ length: BRACKET_PICKS }, (_, index) => (
-          <span
-            key={index}
-            className={`h-1.5 flex-1 rounded-full ${
-              index < state.pickIndex ? "bg-foreground" : "bg-gray-200 dark:bg-gray-800"
-            }`}
-          />
-        ))}
-      </div>
+      <h2 className="title text-[17px] leading-[22px]">Which caption is better?</h2>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="relative grid gap-3 sm:grid-cols-2 sm:gap-4">
         {state.pair.map((captionId, index) => {
           const selected = chosen === captionId;
           const isChampion = state.champion === captionId;
@@ -85,29 +76,55 @@ export function BracketPicker({
               type="button"
               disabled={pending}
               onClick={() => choose(captionId)}
-              className={`min-h-28 rounded-2xl border-2 p-5 text-left text-lg leading-snug transition active:scale-[0.98] disabled:opacity-70 ${
-                selected
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-gray-200 hover:border-gray-400 dark:border-gray-800 dark:hover:border-gray-500"
+              className={`card flex min-h-36 flex-col justify-between gap-4 p-4 text-left transition active:scale-[0.99] disabled:opacity-70 ${
+                selected ? "border-ink ring-1 ring-ink" : "hover:border-ink/60"
               }`}
             >
-              <span className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide opacity-60">
-                {index === 0 ? "This" : "That"}
-                {isChampion && (
-                  <span className="rounded-full bg-amber-100 px-2 py-0.5 normal-case tracking-normal text-amber-800 opacity-100">
-                    Still standing
-                  </span>
-                )}
+              <span className="flex flex-col gap-2">
+                <span className="flex items-center gap-2 text-[10.5px] font-bold uppercase tracking-[0.1em] text-muted">
+                  {index === 0 ? "This" : "That"}
+                  {isChampion && (
+                    <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 normal-case tracking-normal text-ink">
+                      Still standing
+                    </span>
+                  )}
+                </span>
+                <span className="text-[17px] font-extrabold leading-snug tracking-[-0.01em] text-ink">
+                  {textById.get(captionId)}
+                </span>
               </span>
-              {textById.get(captionId)}
+              <span
+                className={`btn btn-sm w-full border border-ink ${
+                  selected ? "bg-ink text-cream" : "bg-transparent text-ink"
+                }`}
+              >
+                {selected ? "Picked" : "Pick"}
+              </span>
             </button>
           );
         })}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/2 hidden h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-cream bg-ink text-[11px] font-extrabold text-cream sm:flex"
+        >
+          VS
+        </span>
       </div>
-      <p className="text-xs text-gray-500">
+
+      <div className="mt-1 flex gap-1" aria-hidden>
+        {Array.from({ length: BRACKET_PICKS }, (_, index) => (
+          <span
+            key={index}
+            className={`h-1 flex-1 rounded-full ${
+              index < state.pickIndex ? "bg-accent-strong" : "bg-dot-idle"
+            }`}
+          />
+        ))}
+      </div>
+      <p className="text-[12px] text-subtle">
         The winner stays on. A new caption takes the loser&apos;s spot until all eight have had a turn.
       </p>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-[13px] text-danger">{error}</p>}
     </section>
   );
 }

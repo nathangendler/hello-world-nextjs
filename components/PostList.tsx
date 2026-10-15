@@ -17,11 +17,11 @@ export async function PostList({
   );
 
   if (posts.length === 0) {
-    return <p className="text-gray-500">{emptyMessage}</p>;
+    return <p className="text-[13px] text-subtle">{emptyMessage}</p>;
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       {posts.map((post) => (
         <PostCard
           key={post.id}

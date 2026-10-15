@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
+/* Jukebox palette: editorial cream page, ink text, orange accents. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf3eb; /* cream */
+  --foreground: #121212; /* ink */
+  --accent: #ffa757;
+  --accent-strong: #ff6e00;
+  --accent-soft: #ffd6af;
+  --muted: #999999;
+  --subtle: #666666;
+  --hairline: #efe8dc;
+  --card-border: #e5ded2;
+  --dot-idle: #d9d0c3;
+  --liked: #e5484d;
+  --gray: #ebebeb;
+  --danger: #dc2626;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-ink: var(--foreground);
+  --color-cream: var(--background);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-hairline: var(--hairline);
+  --color-card-border: var(--card-border);
+  --color-dot-idle: var(--dot-idle);
+  --color-liked: var(--liked);
+  --color-gray-soft: var(--gray);
+  --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* Shared pieces, declared as utilities so Tailwind can @apply and variant them. */
+@utility eyebrow {
+  /* Small tracked caps in accent orange, the section marker used across Jukebox. */
+  @apply text-[11px] font-extrabold uppercase tracking-[0.12em] text-accent;
+}
+@utility title {
+  @apply font-extrabold tracking-[-0.02em] text-ink;
+}
+@utility card {
+  @apply rounded-lg border border-card-border bg-cream;
+}
+@utility btn {
+  @apply inline-flex h-10 items-center justify-center rounded-md px-4 text-[13px] font-bold transition disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply inline-flex h-10 items-center justify-center rounded-md bg-ink px-4 text-[13px] font-bold text-cream transition hover:opacity-90 disabled:opacity-50;
+}
+@utility btn-outline {
+  @apply inline-flex h-10 items-center justify-center rounded-md border border-ink bg-transparent px-4 text-[13px] font-bold text-ink transition hover:bg-ink/5 disabled:opacity-50;
+}
+@utility btn-sm {
+  @apply h-8 px-3 text-[12px];
+}
+@utility input {
+  @apply w-full rounded-md border border-card-border bg-white px-3 py-2 text-ink placeholder:text-muted focus:border-ink focus:outline-none;
+}
+@utility label {
+  @apply text-[13px] font-bold text-ink;
 }
