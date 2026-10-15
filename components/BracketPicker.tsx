@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { recordPick } from "@/lib/actions/pick";
+import { discardDraft } from "@/lib/actions/discard";
 import { ladderState, type LadderState, type Pick } from "@/lib/captions/ladder";
 import { BRACKET_PICKS } from "@/lib/captions/config";
 import type { Caption } from "@/lib/captions/moments";
@@ -28,6 +29,18 @@ export function BracketPicker({
 
   if (state.kind === "done") {
     return <p className="text-[13px] text-subtle">Posting your moment…</p>;
+  }
+
+  function discard() {
+    setError(null);
+    startTransition(async () => {
+      const result = await discardDraft(momentId);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      router.push("/generate");
+    });
   }
 
   function choose(winnerId: string) {
@@ -121,9 +134,19 @@ export function BracketPicker({
           />
         ))}
       </div>
-      <p className="text-[12px] text-subtle">
-        The winner stays on. A new caption takes the loser&apos;s spot until all eight have had a turn.
-      </p>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[12px] text-subtle">
+          The winner stays on. A new caption takes the loser&apos;s spot until all eight have had a turn.
+        </p>
+        <button
+          type="button"
+          onClick={discard}
+          disabled={pending}
+          className="shrink-0 text-[12px] font-bold text-subtle underline hover:text-danger disabled:opacity-50"
+        >
+          Discard
+        </button>
+      </div>
       {error && <p className="text-[13px] text-danger">{error}</p>}
     </section>
   );

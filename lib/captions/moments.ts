@@ -112,44 +112,19 @@ export async function fetchMoment(id: string): Promise<Moment | null> {
   };
 }
 
-export type MyMoment = {
-  id: string;
-  imageUrl: string;
-  createdAt: string;
-  postedAt: string | null;
-  caption: string | null;
-  likeCount: number;
-};
-
-export async function fetchMyMoments(userId: string, limit: number): Promise<MyMoment[]> {
+// Only posted moments count as "yours": unfinished drafts are discarded, never shown.
+export async function fetchMyPosts(userId: string, limit: number): Promise<Post[]> {
   const supabase = await createClient();
-  const [{ data: moments, error }, { data: posts, error: postsError }] = await Promise.all([
-    supabase
-      .from("generations")
-      .select("id, image_url, created_at, posted_at")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(limit),
-    supabase.from("posts").select("id, caption, like_count").eq("user_id", userId),
-  ]);
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("user_id", userId)
+    .order("posted_at", { ascending: false })
+    .limit(limit);
   if (error) {
     throw new Error(`Failed to load your moments: ${error.message}`);
   }
-  if (postsError) {
-    throw new Error(`Failed to load your posts: ${postsError.message}`);
-  }
-  const byId = new Map(posts.map((post) => [post.id, post]));
-  return moments.map((moment) => {
-    const post = byId.get(moment.id);
-    return {
-      id: moment.id,
-      imageUrl: moment.image_url,
-      createdAt: moment.created_at,
-      postedAt: moment.posted_at,
-      caption: post?.caption ?? null,
-      likeCount: post?.like_count ?? 0,
-    };
-  });
+  return data.map(toPost);
 }
 
 // Which of the given posts the viewer has liked. RLS limits likes to the viewer's own rows.

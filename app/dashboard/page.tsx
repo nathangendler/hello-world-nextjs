@@ -1,15 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { requireCompleteProfile } from "@/lib/auth";
-import { fetchMyMoments } from "@/lib/captions/moments";
+import { fetchMyPosts } from "@/lib/captions/moments";
 import { displayName } from "@/lib/profile";
 import { Avatar } from "@/components/Avatar";
 
 export default async function DashboardPage() {
   const profile = await requireCompleteProfile();
-  const moments = await fetchMyMoments(profile.id, 30);
-  const posted = moments.filter((moment) => moment.postedAt !== null);
-  const likes = posted.reduce((sum, moment) => sum + moment.likeCount, 0);
+  const posts = await fetchMyPosts(profile.id, 30);
+  const likes = posts.reduce((sum, post) => sum + post.likeCount, 0);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-7 px-4 py-7 sm:px-8">
@@ -31,7 +30,7 @@ export default async function DashboardPage() {
 
       <section className="grid grid-cols-2 gap-3">
         <div className="card p-4">
-          <p className="title text-[28px]">{posted.length}</p>
+          <p className="title text-[28px]">{posts.length}</p>
           <p className="text-[12px] text-subtle">moments posted</p>
         </div>
         <div className="card p-4">
@@ -47,30 +46,24 @@ export default async function DashboardPage() {
             Post another
           </Link>
         </div>
-        {moments.length === 0 ? (
+        {posts.length === 0 ? (
           <p className="text-[13px] text-subtle">You haven&apos;t posted a moment yet.</p>
         ) : (
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {moments.map((moment) => (
-              <li key={moment.id}>
-                <Link href={`/g/${moment.id}`} className="card block overflow-hidden">
+            {posts.map((post) => (
+              <li key={post.id}>
+                <Link href={`/g/${post.id}`} className="card block overflow-hidden">
                   <Image
-                    src={moment.imageUrl}
-                    alt={moment.caption ?? "Unfinished moment"}
+                    src={post.imageUrl}
+                    alt={post.caption}
                     width={400}
                     height={400}
                     sizes="(max-width: 672px) 50vw, 220px"
                     className="aspect-square w-full bg-gray-soft object-cover"
                   />
                   <div className="p-3 text-[12px]">
-                    {moment.postedAt ? (
-                      <>
-                        <p className="line-clamp-2 font-bold text-ink">{moment.caption}</p>
-                        <p className="mt-1 text-subtle">♥ {moment.likeCount}</p>
-                      </>
-                    ) : (
-                      <p className="font-bold text-accent-strong">Finish picking →</p>
-                    )}
+                    <p className="line-clamp-2 font-bold text-ink">{post.caption}</p>
+                    <p className="mt-1 text-subtle">♥ {post.likeCount}</p>
                   </div>
                 </Link>
               </li>

@@ -164,3 +164,16 @@ left join public.like_counts lc on lc.generation_id = g.id
 where g.posted_at is not null;
 revoke all on public.posts from public, anon, authenticated;
 grant select on public.posts to anon, authenticated;
+
+-- Unfinished moments are disposable: the owner can delete a draft (never a post),
+-- and remove the photo they uploaded for it.
+grant delete on public.generations to authenticated;
+drop policy if exists "Owners discard their drafts" on public.generations;
+create policy "Owners discard their drafts" on public.generations
+  for delete to authenticated
+  using (user_id = (select auth.uid()) and posted_at is null);
+
+drop policy if exists "Users delete own moments" on storage.objects;
+create policy "Users delete own moments" on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'moments' and (storage.foldername(name))[1] = (select auth.uid())::text);

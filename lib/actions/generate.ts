@@ -14,6 +14,7 @@ import {
 } from "@/lib/captions/config";
 import { buildPrompt, parseCaptions } from "@/lib/captions/prompt";
 import { validateGenerationInput } from "@/lib/captions/validation";
+import { deleteDrafts } from "@/lib/actions/discard";
 
 export type GenerateResult =
   | { ok: true; momentId: string }
@@ -100,6 +101,13 @@ export async function createMoment(raw: {
   }
   if (!generated) {
     return { ok: false, errors: ["The model did not answer. Try again."] };
+  }
+
+  // An unfinished moment is never kept: starting a new one throws the old draft away.
+  try {
+    await deleteDrafts(supabase, user.id);
+  } catch (error) {
+    return { ok: false, errors: [error instanceof Error ? error.message : "Could not clear old drafts."] };
   }
 
   const { data: moment, error: momentError } = await supabase
