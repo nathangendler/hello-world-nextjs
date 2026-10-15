@@ -20,13 +20,12 @@ export default async function Home({
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-7 px-4 py-7 sm:px-8">
       <section className="flex flex-col gap-2 border-b border-hairline pb-6">
-        <span className="eyebrow">Caption This</span>
         <h1 className="title text-[28px] leading-tight sm:text-[32px]">
-          Eight captions. Seven picks. One post.
+          Caption your photo
         </h1>
         <p className="text-[14px] leading-relaxed text-subtle">
-          Upload a photo and the AI writes eight captions. Pick head-to-head until one survives.
-          That one gets posted here for everyone to like.
+          Upload a picture and get eight captions written for it. Pick between them two at a
+          time until one is left. That one goes up here for everyone to see and like.
         </p>
         <div className="mt-2">
           <Link href="/generate" className="btn-primary">
