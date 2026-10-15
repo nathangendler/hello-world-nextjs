@@ -6,6 +6,9 @@ if (!supabaseUrl) {
 }
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [{ source: "/feed", destination: "/", permanent: true }];
+  },
   images: {
     // Profile photos and captioned moments are served from the project's public storage buckets.
     remotePatterns: [

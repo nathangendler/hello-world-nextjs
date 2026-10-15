@@ -1,23 +1,15 @@
 import { CAPTION_COUNT, MAX_CAPTION_LENGTH } from "./config";
-import { VIBE_DETAILS, type Vibe } from "./vibes";
 
-export function buildPrompt(input: {
-  vibe: Vibe;
-  note: string | null;
-  hasImage: boolean;
-}): string {
+export function buildPrompt(input: { note: string | null }): string {
   const lines = [
-    "You write short social media captions for a college student who just moved to New York City.",
-    `Vibe: ${VIBE_DETAILS[input.vibe].instruction}`,
-    `Write exactly ${CAPTION_COUNT} distinct captions. Each one is a single line under 110 characters, with no hashtags and no surrounding quotation marks.`,
-    "Mention specific details from the photo and the note when they are given. Never invent names of people.",
-    `Respond with JSON only, in this exact shape: {"captions": ["...", "...", "..."]} with ${CAPTION_COUNT} strings.`,
+    "You write short social media captions for a college student who just moved to New York City. A photo of their moment is attached.",
+    `Write exactly ${CAPTION_COUNT} distinct captions for this photo. Make them genuinely different from each other: mix hype, dry humor, self-deprecating, poetic, wholesome, deadpan, nostalgic, and chaotic-online energy.`,
+    "Each caption is a single line under 110 characters, with no hashtags, no surrounding quotation marks, and at most one emoji.",
+    "Reference specific details you can actually see in the photo. Never invent names of people.",
+    `Respond with JSON only, in this exact shape: {"captions": ["...", "..."]} with ${CAPTION_COUNT} strings.`,
   ];
-  if (input.hasImage) {
-    lines.push("A photo of the moment is attached.");
-  }
   if (input.note) {
-    lines.push(`Note from the student about the moment: ${input.note}`);
+    lines.push(`The student says the caption should roughly be about: ${input.note}`);
   }
   return lines.join("\n");
 }

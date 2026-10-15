@@ -1,22 +1,16 @@
 import { requireCompleteProfile } from "@/lib/auth";
 import { isAiConfigured } from "@/lib/ai/provider";
-import { MAX_NOTE_LENGTH } from "@/lib/captions/config";
 import { DailyPromptCard } from "@/components/DailyPromptCard";
 import { GenerateForm } from "@/components/GenerateForm";
 
-export default async function GeneratePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ note?: string }>;
-}) {
-  const [profile, { note }] = await Promise.all([requireCompleteProfile(), searchParams]);
-  const initialNote = (note ?? "").slice(0, MAX_NOTE_LENGTH);
+export default async function GeneratePage() {
+  const profile = await requireCompleteProfile();
 
   return (
-    <main className="mx-auto w-full max-w-2xl p-8">
-      <h1 className="text-3xl font-bold">Generate captions</h1>
+    <main className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-8">
+      <h1 className="text-3xl font-bold tracking-tight">Post a moment</h1>
       <p className="mt-2 text-gray-500">
-        Describe the moment, add a photo if you have one, and pick a vibe.
+        Add a photo. You&apos;ll get eight captions and pick your favorite.
       </p>
       {!isAiConfigured() && (
         <p role="alert" className="mt-4 rounded-lg border border-amber-400 px-4 py-2 text-sm text-amber-700">
@@ -26,7 +20,7 @@ export default async function GeneratePage({
       <div className="mt-6">
         <DailyPromptCard showCta={false} />
       </div>
-      <GenerateForm userId={profile.id} initialNote={initialNote} />
+      <GenerateForm userId={profile.id} />
     </main>
   );
 }

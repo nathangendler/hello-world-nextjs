@@ -2,13 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
-import { fetchGenerationCaptions } from "@/lib/captions/feed";
-import { VIBE_DETAILS } from "@/lib/captions/vibes";
-import { CaptionList } from "@/components/CaptionList";
+import { fetchMoment, fetchMyLikes, fetchPost } from "@/lib/captions/moments";
+import { BracketPicker } from "@/components/BracketPicker";
+import { PostCard } from "@/components/PostCard";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export default async function GenerationPage({
+export default async function MomentPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -17,56 +17,56 @@ export default async function GenerationPage({
   if (!UUID.test(id)) {
     notFound();
   }
-  const [profile, captions] = await Promise.all([
-    getCurrentProfile(),
-    fetchGenerationCaptions(id),
-  ]);
-  if (captions.length === 0) {
+  const [profile, post] = await Promise.all([getCurrentProfile(), fetchPost(id)]);
+
+  if (post) {
+    const myLikes = await fetchMyLikes([post.id], profile !== null);
+    return (
+      <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 sm:px-8">
+        <PostCard
+          post={post}
+          liked={myLikes.has(post.id)}
+          canLike={profile !== null}
+          isMine={post.userId === profile?.id}
+          large
+        />
+        {post.userNote && (
+          <p className="text-sm text-gray-500">
+            Asked for: <span className="italic">{post.userNote}</span>
+          </p>
+        )}
+        <div className="flex gap-4 text-sm">
+          <Link href="/generate" className="underline">
+            Post your own moment
+          </Link>
+          <Link href="/" className="underline">
+            Back to moments
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  // Not posted: only the owner can see it (RLS), and it is their bracket to finish.
+  const moment = await fetchMoment(id);
+  if (!moment || moment.userId !== profile?.id) {
     notFound();
   }
-  const moment = captions[0];
-  const isMine = profile?.id === moment.userId;
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-8">
-      <section className="flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
-            {VIBE_DETAILS[moment.vibe].label}
-          </span>
-          {isMine && <span>Your moment</span>}
-          <span>{new Date(moment.createdAt).toLocaleDateString("en-US", { dateStyle: "medium" })}</span>
-        </div>
-        {moment.imageUrl && (
-          <Image
-            src={moment.imageUrl}
-            alt={moment.userNote ?? "The moment"}
-            width={640}
-            height={480}
-            className="max-h-96 w-full rounded-xl object-cover"
-          />
-        )}
-        {moment.userNote && <p className="text-lg">{moment.userNote}</p>}
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold">Three captions. Rate them.</h1>
-        <CaptionList
-          captions={captions}
-          viewerId={profile?.id ?? null}
-          showContext={false}
-          emptyMessage="No captions."
+    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 sm:px-8">
+      <div className="overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-900">
+        <Image
+          src={moment.imageUrl}
+          alt="Your moment"
+          width={1200}
+          height={900}
+          sizes="(max-width: 672px) 100vw, 672px"
+          priority
+          className="max-h-80 w-full object-cover"
         />
-      </section>
-
-      <div className="flex gap-4 text-sm">
-        <Link href="/generate" className="underline">
-          Caption another moment
-        </Link>
-        <Link href="/feed" className="underline">
-          Back to the feed
-        </Link>
       </div>
+      <BracketPicker momentId={moment.id} captions={moment.captions} initialPicks={moment.picks} />
     </main>
   );
 }

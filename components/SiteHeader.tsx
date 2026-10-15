@@ -12,8 +12,7 @@ export async function SiteHeader() {
         <Link href="/" className="font-semibold">
           Caption the City
         </Link>
-        <Link href="/feed">Feed</Link>
-        <Link href="/generate">Generate</Link>
+        <Link href="/generate">Post a moment</Link>
         {profile && <Link href="/dashboard">Dashboard</Link>}
         <div className="ml-auto flex items-center gap-4">
           {profile ? (

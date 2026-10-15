@@ -6,39 +6,32 @@ const OTHER = "22222222-2222-4222-8222-222222222222";
 const FILE = "33333333-3333-4333-8333-333333333333.jpg";
 
 describe("validateGenerationInput", () => {
-  it("accepts a note without a photo", () => {
-    const result = validateGenerationInput({ vibe: "hype", note: " hi ", imagePath: null }, USER);
-    expect(result).toEqual({ ok: true, value: { vibe: "hype", note: "hi", imagePath: null } });
+  it("accepts a photo in the user's own folder with an optional note", () => {
+    expect(validateGenerationInput({ note: " hi ", imagePath: `${USER}/${FILE}` }, USER)).toEqual({
+      ok: true,
+      value: { note: "hi", imagePath: `${USER}/${FILE}` },
+    });
+    expect(validateGenerationInput({ note: "", imagePath: `${USER}/${FILE}` }, USER)).toEqual({
+      ok: true,
+      value: { note: null, imagePath: `${USER}/${FILE}` },
+    });
   });
 
-  it("accepts a photo in the user's own folder without a note", () => {
-    const result = validateGenerationInput(
-      { vibe: "poetic", note: "", imagePath: `${USER}/${FILE}` },
-      USER,
-    );
-    expect(result).toEqual({
-      ok: true,
-      value: { vibe: "poetic", note: null, imagePath: `${USER}/${FILE}` },
+  it("requires a photo and rejects one outside the user's folder", () => {
+    expect(validateGenerationInput({ note: "", imagePath: null }, USER)).toEqual({
+      ok: false,
+      errors: ["Add a photo first."],
+    });
+    expect(validateGenerationInput({ note: "", imagePath: `${OTHER}/${FILE}` }, USER)).toEqual({
+      ok: false,
+      errors: ["Add a photo first."],
     });
   });
 
   it("reports every problem at once", () => {
-    const result = validateGenerationInput(
-      { vibe: "angry", note: "x".repeat(301), imagePath: `${OTHER}/${FILE}` },
-      USER,
-    );
-    expect(result).toEqual({
+    expect(validateGenerationInput({ note: "x".repeat(201), imagePath: "nope" }, USER)).toEqual({
       ok: false,
-      errors: [
-        "Pick a vibe.",
-        "Keep the note under 300 characters.",
-        "The uploaded photo could not be used.",
-      ],
+      errors: ["Keep the note under 200 characters.", "Add a photo first."],
     });
-  });
-
-  it("requires a note or a photo", () => {
-    const result = validateGenerationInput({ vibe: "roast", note: "", imagePath: "" }, USER);
-    expect(result).toEqual({ ok: false, errors: ["Add a note, a photo, or both."] });
   });
 });

@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Caption the City",
-  description: "AI captions for your NYC moments, rated by everyone",
+  description: "Eight AI captions for your NYC photo. Pick head-to-head until one wins.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

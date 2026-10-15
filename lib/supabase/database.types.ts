@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -71,40 +71,150 @@ export type Database = {
             referencedRelation: "generations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "captions_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
         ]
       }
       generations: {
         Row: {
           created_at: string
           id: string
-          image_url: string | null
+          image_url: string
           model: string
+          posted_at: string | null
           prompt: string
           user_id: string
           user_note: string | null
-          vibe: string
+          winner_caption_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
-          image_url?: string | null
+          image_url: string
           model: string
+          posted_at?: string | null
           prompt: string
           user_id: string
           user_note?: string | null
-          vibe: string
+          winner_caption_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
-          image_url?: string | null
+          image_url?: string
           model?: string
+          posted_at?: string | null
           prompt?: string
           user_id?: string
           user_note?: string | null
-          vibe?: string
+          winner_caption_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "generations_winner_caption_id_fkey"
+            columns: ["winner_caption_id"]
+            isOneToOne: false
+            referencedRelation: "captions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      likes: {
+        Row: {
+          created_at: string
+          generation_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          generation_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          generation_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "likes_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      picks: {
+        Row: {
+          created_at: string
+          generation_id: string
+          id: string
+          loser_caption_id: string
+          pick_index: number
+          user_id: string
+          winner_caption_id: string
+        }
+        Insert: {
+          created_at?: string
+          generation_id: string
+          id?: string
+          loser_caption_id: string
+          pick_index: number
+          user_id: string
+          winner_caption_id: string
+        }
+        Update: {
+          created_at?: string
+          generation_id?: string
+          id?: string
+          loser_caption_id?: string
+          pick_index?: number
+          user_id?: string
+          winner_caption_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "picks_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "picks_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "picks_loser_caption_id_fkey"
+            columns: ["loser_caption_id"]
+            isOneToOne: false
+            referencedRelation: "captions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "picks_winner_caption_id_fkey"
+            columns: ["winner_caption_id"]
+            isOneToOne: false
+            referencedRelation: "captions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -136,99 +246,45 @@ export type Database = {
         }
         Relationships: []
       }
-      ratings: {
-        Row: {
-          caption_id: string
-          created_at: string
-          id: string
-          score: number
-          user_id: string
-        }
-        Insert: {
-          caption_id: string
-          created_at?: string
-          id?: string
-          score: number
-          user_id: string
-        }
-        Update: {
-          caption_id?: string
-          created_at?: string
-          id?: string
-          score?: number
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ratings_caption_id_fkey"
-            columns: ["caption_id"]
-            isOneToOne: false
-            referencedRelation: "captions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ratings_caption_id_fkey"
-            columns: ["caption_id"]
-            isOneToOne: false
-            referencedRelation: "feed_captions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
-      caption_scores: {
+      like_counts: {
         Row: {
-          average_score: number | null
-          caption_id: string | null
-          rating_count: number | null
-          weighted_score: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ratings_caption_id_fkey"
-            columns: ["caption_id"]
-            isOneToOne: false
-            referencedRelation: "captions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ratings_caption_id_fkey"
-            columns: ["caption_id"]
-            isOneToOne: false
-            referencedRelation: "feed_captions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      feed_captions: {
-        Row: {
-          average_score: number | null
-          created_at: string | null
           generation_id: string | null
-          id: string | null
-          image_url: string | null
-          position: number | null
-          rating_count: number | null
-          text: string | null
-          user_id: string | null
-          user_note: string | null
-          vibe: string | null
-          weighted_score: number | null
+          like_count: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "captions_generation_id_fkey"
+            foreignKeyName: "likes_generation_id_fkey"
             columns: ["generation_id"]
             isOneToOne: false
             referencedRelation: "generations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "likes_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      posts: {
+        Row: {
+          caption: string | null
+          id: string | null
+          image_url: string | null
+          like_count: number | null
+          posted_at: string | null
+          user_id: string | null
+          user_note: string | null
+        }
+        Relationships: []
       }
     }
     Functions: {
-      [_ in never]: never
+      is_posted: { Args: { target_generation: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

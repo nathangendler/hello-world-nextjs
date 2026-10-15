@@ -16,7 +16,7 @@ import { buildPrompt, parseCaptions } from "@/lib/captions/prompt";
 import { validateGenerationInput } from "@/lib/captions/validation";
 
 export type GenerateResult =
-  | { ok: true; generationId: string }
+  | { ok: true; momentId: string }
   | { ok: false; errors: string[] };
 
 function publicImageUrl(imagePath: string): string {
@@ -39,8 +39,7 @@ async function loadImage(imagePath: string): Promise<AiImage> {
   return { mimeType, base64: Buffer.from(bytes).toString("base64") };
 }
 
-export async function createGeneration(raw: {
-  vibe: string;
+export async function createMoment(raw: {
   note: string;
   imagePath: string | null;
 }): Promise<GenerateResult> {
@@ -56,7 +55,7 @@ export async function createGeneration(raw: {
   if (!validated.ok) {
     return { ok: false, errors: validated.errors };
   }
-  const { vibe, note, imagePath } = validated.value;
+  const { note, imagePath } = validated.value;
 
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { count, error: countError } = await supabase
@@ -70,20 +69,18 @@ export async function createGeneration(raw: {
   if ((count ?? 0) >= DAILY_GENERATION_LIMIT) {
     return {
       ok: false,
-      errors: [`You've hit today's limit of ${DAILY_GENERATION_LIMIT} generations. Come back tomorrow!`],
+      errors: [`You've hit today's limit of ${DAILY_GENERATION_LIMIT} moments. Come back tomorrow!`],
     };
   }
 
-  let image: AiImage | null = null;
-  if (imagePath) {
-    try {
-      image = await loadImage(imagePath);
-    } catch (error) {
-      return { ok: false, errors: [error instanceof Error ? error.message : "Photo could not be read."] };
-    }
+  let image: AiImage;
+  try {
+    image = await loadImage(imagePath);
+  } catch (error) {
+    return { ok: false, errors: [error instanceof Error ? error.message : "Photo could not be read."] };
   }
 
-  const prompt = buildPrompt({ vibe, note, hasImage: image !== null });
+  const prompt = buildPrompt({ note });
   let generated: { model: string; text: string };
   try {
     generated = await generateJson({ prompt, image, itemCount: CAPTION_COUNT });
@@ -99,25 +96,24 @@ export async function createGeneration(raw: {
     return { ok: false, errors: [`The model's answer could not be used (${parsed.reason}). Try again.`] };
   }
 
-  const { data: generation, error: generationError } = await supabase
+  const { data: moment, error: momentError } = await supabase
     .from("generations")
     .insert({
       user_id: user.id,
-      vibe,
       user_note: note,
-      image_url: imagePath ? publicImageUrl(imagePath) : null,
+      image_url: publicImageUrl(imagePath),
       prompt,
       model: generated.model,
     })
     .select("id")
     .single();
-  if (generationError) {
-    return { ok: false, errors: [`Could not save the generation: ${generationError.message}`] };
+  if (momentError) {
+    return { ok: false, errors: [`Could not save the moment: ${momentError.message}`] };
   }
 
   const { error: captionsError } = await supabase.from("captions").insert(
     parsed.captions.map((text, index) => ({
-      generation_id: generation.id,
+      generation_id: moment.id,
       position: index + 1,
       text,
     })),
@@ -127,5 +123,5 @@ export async function createGeneration(raw: {
   }
 
   revalidatePath("/", "layout");
-  return { ok: true, generationId: generation.id };
+  return { ok: true, momentId: moment.id };
 }
