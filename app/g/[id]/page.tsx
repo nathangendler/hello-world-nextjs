@@ -48,8 +48,12 @@ export default async function MomentPage({
   }
 
   // Not posted: only the owner can see it (RLS), and it is their bracket to finish.
+  // Anonymous visitors have no access to picks at all, so don't even look.
+  if (!profile) {
+    notFound();
+  }
   const moment = await fetchMoment(id);
-  if (!moment || moment.userId !== profile?.id) {
+  if (!moment || moment.userId !== profile.id) {
     notFound();
   }
 
